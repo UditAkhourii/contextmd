@@ -1,9 +1,9 @@
 {
-  "name": "contextmd",
+  "name": "contextmd-cli",
   "version": "1.0.0",
   "description": "The ultimate Agentic AI Context Generator for Documentation.",
   "bin": {
-    "contextmd": "./dist/index.js"
+    "contextmd": "dist/index.js"
   },
   "main": "dist/index.js",
   "scripts": {
@@ -34,6 +34,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/UditAkhourii/contextmd.git"
+    "url": "git+https://github.com/UditAkhourii/contextmd.git"
   }
 }

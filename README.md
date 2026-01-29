@@ -7,7 +7,7 @@
 <p align="center">
   <a href="https://github.com/UditAkhourii/contextmd/actions"><img src="https://img.shields.io/github/actions/workflow/status/UditAkhourii/contextmd/ci.yml?branch=main&style=for-the-badge" alt="CI status"></a>
   <a href="https://www.npmjs.com/package/contextmd-cli"><img src="https://img.shields.io/npm/v/contextmd-cli?style=for-the-badge&color=blue" alt="NPM Version"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge" alt="MIT License"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg?style=for-the-badge" alt="CC BY-NC 4.0"></a>
   <a href="https://typescriptlang.org"><img src="https://img.shields.io/badge/Written_in-TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript"></a>
 </p>
 
@@ -143,4 +143,4 @@ We welcome contributions! Please open an issue or submit a PR if you have ideas 
 
 ## 📄 License
 
-MIT © [Antigravity](https://github.com/UditAkhourii)
+**CC BY-NC 4.0** © [Udit Akhouri](https://github.com/UditAkhourii)

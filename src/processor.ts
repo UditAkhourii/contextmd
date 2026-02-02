@@ -8,8 +8,14 @@ export class Processor {
     private openai: OpenAI;
     private turndown: TurndownService;
 
-    constructor(apiKey: string) {
-        this.openai = new OpenAI({ apiKey });
+    private model: string;
+
+    constructor(apiKey: string, baseURL: string = 'https://api.openai.com/v1', model: string = 'gpt-4o-mini') {
+        const config: any = { apiKey };
+        if (baseURL) config.baseURL = baseURL;
+        this.openai = new OpenAI(config);
+
+        this.model = model;
         this.turndown = new TurndownService({
             headingStyle: 'atx',
             codeBlockStyle: 'fenced'
@@ -47,7 +53,7 @@ export class Processor {
         // We use a cheap fast model for basic formatting/cleanup
         try {
             const response = await this.openai.chat.completions.create({
-                model: 'gpt-4o-mini', // Cost effective
+                model: this.model,
                 messages: [
                     {
                         role: 'system',

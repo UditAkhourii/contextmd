@@ -15,22 +15,30 @@ program
     .name('moltext')
     .description('Agent-native documentation compiler for Moltbots')
     .argument('<url>', 'Base URL of the documentation to compile')
-    .option('-k, --key <key>', 'OpenAI API Key (or set OPENAI_API_KEY env var)')
+    .option('-k, --key <key>', 'API Key (optional if using local inference)')
+    .option('-u, --base-url <url>', 'Base URL for the LLM (e.g. http://localhost:11434/v1)', 'https://api.openai.com/v1')
+    .option('-m, --model <model>', 'Model name to use', 'gpt-4o-mini')
     .option('-o, --output <path>', 'Output file path', 'context.md')
     .option('-l, --limit <number>', 'Max pages to parse', '100')
     .action(async (url, options) => {
         try {
             console.log(chalk.bold.cyan('\n🚀 Moltext - Agent-Native Documentation Compiler\n'));
 
-            const apiKey = options.key || process.env.OPENAI_API_KEY;
+            // If base-url is not default OpenAI, we can allow empty key (assuming local/no-auth)
+            let apiKey = options.key || process.env.OPENAI_API_KEY;
 
             if (!apiKey) {
-                console.error(chalk.red('❌ Error: OpenAI API Key is required. Provide it via -k flag or OPENAI_API_KEY env var.'));
-                process.exit(1);
+                if (options.baseUrl.includes('api.openai.com')) {
+                    console.error(chalk.red('❌ Error: API Key is required for OpenAI. Provide it via -k flag or OPENAI_API_KEY env var.'));
+                    process.exit(1);
+                } else {
+                    // Placeholder for local inference
+                    apiKey = 'dummy-key';
+                }
             }
 
             const crawler = new Crawler(url);
-            const processor = new Processor(apiKey);
+            const processor = new Processor(apiKey, options.baseUrl, options.model);
 
             const spinner = ora('Initializing parser...').start();
 

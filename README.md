@@ -38,14 +38,25 @@ moltext [options] <url>
 
 ### Options
 
-- `-k, --key <key>`: OpenAI API Key (or set `OPENAI_API_KEY` env var)
+- `-k, --key <key>`: API Key (optional for local LLMs)
+- `-u, --base-url <url>`: API Base URL (default: `https://api.openai.com/v1`)
+- `-m, --model <model>`: Model name (default: `gpt-4o-mini`)
 - `-o, --output <path>`: Output file path (default: `context.md`)
 - `-l, --limit <number>`: Max pages to parse (default: 100)
 
-### Example
+### Examples
 
+**Standard Usage (OpenAI):**
 ```bash
 moltext https://docs.example.com -o context.md
+```
+
+**Using a Moltbot / Local Model (Ollama):**
+Instruct the compiler to use the same brain as your agent.
+```bash
+moltext https://docs.example.com \
+  --base-url http://localhost:11434/v1 \
+  --model llama3
 ```
 
 ## License

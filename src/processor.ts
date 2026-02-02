@@ -42,14 +42,19 @@ export class Processor {
         return main;
     }
 
-    async processPage(page: Page): Promise<string> {
+    async processPage(page: Page, raw: boolean = false): Promise<string> {
         // 1. Clean HTML
         const cleanedHtml = this.cleanHtml(page.content);
 
         // 2. Convert to Markdown
         let markdown = this.turndown.turndown(cleanedHtml);
 
-        // 3. Enhance with LLM
+        // 3. Raw Mode Check
+        if (raw) {
+            return `## Source: [${page.title}](${page.url})\n\n${markdown}\n\n---\n\n`;
+        }
+
+        // 4. Enhance with LLM
         // We use a cheap fast model for basic formatting/cleanup
         try {
             const response = await this.openai.chat.completions.create({

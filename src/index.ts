@@ -15,26 +15,40 @@ program
     .name('moltext')
     .description('Agent-native documentation compiler for Moltbots')
     .argument('<url>', 'Base URL of the documentation to compile')
-    .option('-k, --key <key>', 'API Key (optional if using local inference)')
+    .option('-k, --key <key>', 'API Key (optional if using local inference or raw mode)')
     .option('-u, --base-url <url>', 'Base URL for the LLM (e.g. http://localhost:11434/v1)', 'https://api.openai.com/v1')
     .option('-m, --model <model>', 'Model name to use', 'gpt-4o-mini')
+    .option('-r, --raw', 'Raw mode: Skip LLM processing and return clean markdown', false)
     .option('-o, --output <path>', 'Output file path', 'context.md')
     .option('-l, --limit <number>', 'Max pages to parse', '100')
     .action(async (url, options) => {
         try {
             console.log(chalk.bold.cyan('\n🚀 Moltext - Agent-Native Documentation Compiler\n'));
 
-            // If base-url is not default OpenAI, we can allow empty key (assuming local/no-auth)
+            // Auth Logic:
+            // 1. Raw Mode = No Key Needed.
+            // 2. Local Base URL = No Key Needed.
+            // 3. OpenAI Base URL = Key Required.
+
             let apiKey = options.key || process.env.OPENAI_API_KEY;
 
-            if (!apiKey) {
-                if (options.baseUrl.includes('api.openai.com')) {
+            // If NOT raw mode and NO key provided...
+            if (!options.raw && !apiKey) {
+                // Check if using local model?
+                const isLocal = !options.baseUrl.includes('api.openai.com');
+
+                if (!isLocal) {
+                    // Using OpenAI but no key -> Error
                     console.error(chalk.red('❌ Error: API Key is required for OpenAI. Provide it via -k flag or OPENAI_API_KEY env var.'));
+                    console.error(chalk.yellow('💡 Tip: Use --raw to skip AI processing, or --base-url for local models.'));
                     process.exit(1);
                 } else {
-                    // Placeholder for local inference
+                    // Local inference usually accepts any string as key
                     apiKey = 'dummy-key';
                 }
+            } else if (options.raw && !apiKey) {
+                // Raw mode doesn't need a key
+                apiKey = 'raw-mode-no-key';
             }
 
             const crawler = new Crawler(url);
@@ -56,7 +70,12 @@ program
             // Header for context.md
             outputContent.push(`# Documentation Context\n\nCompiled by Moltext from ${url} at ${new Date().toISOString()}\n\n---\n\n`);
 
-            const processSpinner = ora('Normalizing and compiling pages into agent-readable form...').start();
+            // Update spinner text based on mode
+            const spinnerMsg = options.raw
+                ? 'Normalizing pages (Raw Mode)...'
+                : 'Normalizing and compiling pages into agent-readable form...';
+
+            const processSpinner = ora(spinnerMsg).start();
 
             // Process sequentially or in small batches to avoid Rate Limits
             const batchSize = 5;
@@ -65,13 +84,16 @@ program
             for (let i = 0; i < pages.length; i += batchSize) {
                 const batch = pages.slice(i, i + batchSize);
                 const results = await Promise.all(batch.map(async (page) => {
-                    const result = await processor.processPage(page);
+                    // Pass the raw flag to the processor
+                    const result = await processor.processPage(page, options.raw);
                     return result;
                 }));
 
                 outputContent.push(...results);
                 processedCount += batch.length;
-                processSpinner.text = `Compiling pages... (${Math.min(processedCount, pages.length)}/${pages.length})`;
+
+                const action = options.raw ? 'Processing' : 'Compiling';
+                processSpinner.text = `${action} pages... (${Math.min(processedCount, pages.length)}/${pages.length})`;
             }
 
             processSpinner.succeed(chalk.green('Compilation complete!'));

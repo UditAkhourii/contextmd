@@ -38,9 +38,10 @@ moltext [options] <url>
 
 ### Options
 
-- `-k, --key <key>`: API Key (optional for local LLMs)
+- `-k, --key <key>`: API Key (optional for local LLMs or raw mode)
 - `-u, --base-url <url>`: API Base URL (default: `https://api.openai.com/v1`)
 - `-m, --model <model>`: Model name (default: `gpt-4o-mini`)
+- `-r, --raw`: Skip LLM processing (parser only)
 - `-o, --output <path>`: Output file path (default: `context.md`)
 - `-l, --limit <number>`: Max pages to parse (default: 100)
 
@@ -51,6 +52,12 @@ moltext [options] <url>
 moltext https://docs.example.com -o context.md
 ```
 
+**Raw Mode (No API Key):**
+Deterministic output. Delegates phrasing/summary logic to the consuming agent.
+```bash
+moltext https://docs.example.com --raw
+```
+
 **Using a Moltbot / Local Model (Ollama):**
 Instruct the compiler to use the same brain as your agent.
 ```bash
@@ -58,6 +65,15 @@ moltext https://docs.example.com \
   --base-url http://localhost:11434/v1 \
   --model llama3
 ```
+
+## OpenClaw / ClawHub Integration
+
+Moltext is designed to be a "skill" or "tool" for [OpenClaw (Moltbot)](https://docs.molt.bot/).
+
+1.  **Install**: `npm install -g moltext` on your Moltbot server.
+2.  **Usage**: Create a skill that invokes `moltext <url> --raw`.
+3.  **Consumption**: Moltbot reads the pure markdown output and uses its own context window to answer user queries or perform tasks.
+
 
 ## License
 

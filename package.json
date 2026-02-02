@@ -1,6 +1,6 @@
 {
   "name": "moltext",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Agent-native documentation compiler that converts human docs into deterministic context.md for Moltbots and autonomous agents.",
   "bin": {
     "moltext": "dist/index.js"
